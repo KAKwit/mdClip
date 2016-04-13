@@ -1,47 +1,118 @@
 body {
 	font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
 	font-size: 12px;
-	margin: 3px;
+	margin: 4px;
 }
 
 h1 {
-	margin: 8px 0 10px 0;
-	font-size: 14px;
+	position: fixed;
+	margin: 0;
+	padding: 9px 10px 4px 10px;
+	font-size: 16px;
 	font-weight: bold;
 	color: #333;
 }
 
 #main-window {
-	min-width: 300px;
-	padding: 5px;
+	position: relative;
+	width: 298px;
+	height: 333px;
 	border-radius: 3px;
 	background-color: #E6E1D8;
 	border: 1px solid #D9D5CE;
+	overflow: hidden;
 }
 
-#content {
+#content, #options {
+	position: fixed;
+	top: 42px;
+	width: 270px;
+	height: 240px;
 	background-color: white;
 	border-radius: 5px;
-	word-break: break-all;
-	font-family: "Courier New", "Monaco", "SourceCodePro-Medium", "MS Gothic", monospace;
-	height: 200px;
 	overflow-y: scroll;
 	padding: 10px;
 	outline: none;
 	border: 1px solid #D9D5CE;
+	opacity: 0;
+	transition: all 0.3s ease-in-out;
 }
 
-#copy-again {
+#content {
+	word-break: break-all;
+	font-family: "Courier New", "Monaco", "SourceCodePro-Medium", "MS Gothic", monospace;
+}
+
+#content {
+	left: 320px;
+}
+
+#content.in {
+	opacity: 1;
+	left: 8px;
+}
+
+#options {
+	left: -320px;
+}
+
+#options.in {
+	opacity: 1;
+	left: 8px;
+}
+
+input[type=button] {
 	cursor: pointer;
+	width: 80px;
 	color: #333;
 	height: 28px;
 	border-radius: 5px;
-	width: 80px;
 	border: 1px solid #D9D5CE;
-	background-color: #F7F5EF;
+	background-color: #F6F1E8;
+	outline: none;
+	transition: all 0.2s ease-in-out;
 }
 
 footer {
-	text-align: right;
-	margin-top: 5px;
+	position: fixed;
+	width: 100%;
+	bottom: 36px;
+}
+
+input[type=button]:hover {
+	border: 1px solid #D9D5CE;
+	background-color: white;
+}
+
+#options-button {
+	position: absolute;
+	left: 3px;
+}
+
+#copy-again {
+	opacity: 0;
+	cursor: default;
+	position: absolute;
+	right: 13px;
+}
+
+#copy-again.in {
+	opacity: 1;
+	cursor: pointer;
+}
+
+label {
+	font-weight: bold;
+}
+
+p {
+	font-size: 11px;
+	color: #666;
+	margin: 3px 0 8px 0;
+}
+
+input {
+	padding: 3px 5px;
+	font-size: 12px;
+	min-width: 50px;
 }

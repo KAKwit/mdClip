@@ -1,4 +1,7 @@
-var contentContainer = 'content';
+var contentContainerSelector  = 'content';
+var optionsContainerSelector  = 'options';
+var copyAgainButtonSelector   = 'copy-again';
+var optionsButtonSelector     = 'options-button';
 
 function getTabDetails(callback) {
 	var queryInfo = {
@@ -43,6 +46,7 @@ function getSettings(callback) {
 				settings[key] = storage[key];
 			}
 		}
+		document.getElementById('headingLevel').value = settings.headingLevel;
 		callback(settings);
 	});	
 }
@@ -74,7 +78,7 @@ function createClip(details, settings) {
 }
 
 function copyToClipboard() {
-	var el = document.getElementById(contentContainer);
+	var el = document.getElementById(contentContainerSelector);
 	el.focus();
 	document.execCommand('SelectAll');
     document.execCommand('copy');
@@ -84,7 +88,7 @@ function copyToClipboard() {
 function getAndRenderClip() {
 	getTabDetails(function(details) {
 		getSettings(function(settings) {
-			document.getElementById(contentContainer).innerHTML = createClip(details, settings);
+			document.getElementById(contentContainerSelector).innerHTML = createClip(details, settings);
 			if (settings.copyToClipboard) {
 				copyToClipboard();
 			}
@@ -92,7 +96,20 @@ function getAndRenderClip() {
 	});
 }
 
-document.addEventListener('DOMContentLoaded', function() {	
-	document.getElementById('copy-again').addEventListener('click', copyToClipboard);
+function showHideOptions() {
+	var content = document.getElementById(contentContainerSelector);
+	var optionsButton = document.getElementById(optionsButtonSelector);
+	var copyButton = document.getElementById(copyAgainButtonSelector);
+	
+	var showOptions = (content.className === 'in');
+	showOptions ? content.className = '' : content.className = 'in';
+	showOptions ? copyButton.className = '' : copyButton.className = 'in';
+	showOptions ? options.className = 'in' : options.className = '';
+	showOptions ? optionsButton.value = 'Okay' : optionsButton.value = 'Settings';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+	document.getElementById(copyAgainButtonSelector).addEventListener('click', copyToClipboard);
+	document.getElementById(optionsButtonSelector).addEventListener('click', showHideOptions);
 	getAndRenderClip();
 });
