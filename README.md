@@ -2,7 +2,7 @@
 Chrome extension to create a small markdown note from the current page.
 
 ### Installation
-For the moment, download the source and then go to extensions.  Ensure _"Developer mode"_ is switched on, then click the _"Load unpacked extension..."_ button.  Choose the location where you put the `src` files and add it.
+For the moment, download the source and then go to extensions, ensure _"Developer mode"_ is switched on, then click the _"Load unpacked extension..."_ button.  Choose the location where you put the `src` files and add it.
 
 ### What it does
 When you click the icon it will attempt to create a little markdown clip of the current tab and place it in your clipboard.  This includes the following details (if available):
