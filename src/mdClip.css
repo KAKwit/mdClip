@@ -21,6 +21,12 @@ h1 {
 	background-color: #E6E1D8;
 	border: 1px solid #D9D5CE;
 	overflow: hidden;
+	opacity: 0;
+	transition: opacity 0.1s ease-in-out;
+}
+
+#main-window.in {
+	opacity: 1;
 }
 
 #content, #options {
@@ -38,17 +44,18 @@ h1 {
 }
 
 #content {
+	left: 320px;
 	word-break: break-all;
 	font-family: "Courier New", "Monaco", "SourceCodePro-Medium", "MS Gothic", monospace;
-}
-
-#content {
-	left: 320px;
 }
 
 #content.in {
 	opacity: 1;
 	left: 11px;
+}
+
+#content.copied {
+	background-color: #ffffd0;
 }
 
 #options {
@@ -113,7 +120,7 @@ label {
 }
 
 .op {
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 }
 
 p {

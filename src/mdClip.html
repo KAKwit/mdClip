@@ -10,14 +10,14 @@
 			<h1>mdClip</h1>
 			<div id="content" class="in" contenteditable="true"></div>
 			<div id="options">
-				<div class="op">
+				<div class="op" style="margin-bottom:10px;">
 					<label for="heading-level">Heading level</label>
 					<p>The number of '#' characters to insert before the title (1 to 6).</p>
 					<input id="heading-level" type="range" min="1" max="6" step="1" />
 					<span id="heading-level-value">3</span>
 				</div>
 				<div class="op">
-					<label for="headingLevel">Include icon</label>
+					<label for="include-icon">Include icon</label>
 					<p>Whether or not to include the favicon.</p>
 					<input type="radio" id="include-icon-false" name="include-icon" value="false" />
 					<label for="include-icon-false">No</label>
@@ -25,10 +25,19 @@
 					<input type="radio" id="include-icon-true" name="include-icon" value="true" />
 					<label for="include-icon-true">Yes</label>
 				</div>
+				<div class="op">
+					<label for="copy-to-clipboard">Copy to clipboard</label>
+					<p>Whether or not to copy to clipboard. If set to No then you will need to copy it manually.</p>
+					<input type="radio" id="copy-to-clipboard-false" name="copy-to-clipboard" value="false" />
+					<label for="copy-to-clipboard-false">No</label>
+					&nbsp;&nbsp;
+					<input type="radio" id="copy-to-clipboard-true" name="copy-to-clipboard" value="true" />
+					<label for="copy-to-clipboard-true">Yes</label>
+				</div>
 			</div>
 			<footer>
 				<input type="button" id="options-button" value="Settings" />
-				<input type="button" id="copy-again" class="in" value="Copy again" />
+				<input type="button" id="copy-again" class="in" value="Copy" />
 			</footer>
 		</div>
 	</body>

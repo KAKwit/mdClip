@@ -2,14 +2,16 @@ mdClip = function() {
 
 	/* Document object selector names */
 	var selectors = {
-		contentContainer  : 'content',
-		optionsContainer  : 'options',
-		copyAgainButton   : 'copy-again',
-		optionsButton     : 'options-button',
-		headingLevel      : 'heading-level',
-		headingLevelValue : 'heading-level-value',
-		includeIconFalse  : 'include-icon-false',
-		includeIconTrue   : 'include-icon-true'
+		contentContainer     : 'content',
+		optionsContainer     : 'options',
+		copyAgainButton      : 'copy-again',
+		optionsButton        : 'options-button',
+		headingLevel         : 'heading-level',
+		headingLevelValue    : 'heading-level-value',
+		includeIconFalse     : 'include-icon-false',
+		includeIconTrue      : 'include-icon-true',
+		copyToClipboardTrue  : 'copy-to-clipboard-true',
+		copyToClipboardFalse : 'copy-to-clipboard-false'
 	};
 	
 	/* Messages sent to the window */
@@ -49,6 +51,7 @@ mdClip = function() {
 				if (settings.copyToClipboard) {
 					copyToClipboard();
 				}
+				document.getElementById('main-window').className = 'in';
 			});
 		});
 	}
@@ -109,11 +112,13 @@ mdClip = function() {
 					settings[key] = storage[key];
 				}
 			}
-			console.log(settings);
 			document.getElementById(selectors.headingLevel).value = settings.headingLevel;
 			document.getElementById(selectors.headingLevelValue).textContent = settings.headingLevel;
 			settings.includeIcon ? document.getElementById(selectors.includeIconTrue).setAttribute('checked', true) : document.getElementById(selectors.includeIconTrue).removeAttribute('checked');
 			settings.includeIcon ? document.getElementById(selectors.includeIconFalse).removeAttribute('checked') : document.getElementById(selectors.includeIconFalse).setAttribute('checked', true);
+			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardTrue).setAttribute('checked', true) : document.getElementById(selectors.copyToClipboardTrue).removeAttribute('checked');
+			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardFalse).removeAttribute('checked') : document.getElementById(selectors.copyToClipboardFalse).setAttribute('checked', true);
+			settings.copyToClipboard ? document.getElementById(selectors.copyAgainButton).value = 'Copy again' : document.getElementById(selectors.copyAgainButton).value = 'Copy'
 			callback(settings);
 		});	
 	}
@@ -145,8 +150,7 @@ mdClip = function() {
 	function updateSettingsFromScreen() {
 		settings.headingLevel = parseInt(document.getElementById(selectors.headingLevel).value);
 		settings.includeIcon = (document.querySelector('input[name=include-icon]:checked').value === 'true');
-		console.log(settings.headingLevel);
-		console.log(settings.includeIcon);
+		settings.copyToClipboard = (document.querySelector('input[name=copy-to-clipboard]:checked').value === 'true');
 		putSettings(function() {
 			getAndRenderClip();
 		});
@@ -167,8 +171,14 @@ mdClip = function() {
 }();
 
 document.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('copy-again').addEventListener('click', mdClip.copyToClipboard);
 	document.getElementById('options-button').addEventListener('click', mdClip.showHideOptions);
 	document.getElementById('heading-level').addEventListener('input', mdClip.updateLevelValue);
+	document.getElementById('copy-again').addEventListener('click', function() {
+		document.getElementById('content').className = 'in copied';
+		mdClip.copyToClipboard();
+		window.setTimeout(function() {
+			document.getElementById('content').className = 'in';
+		}, 300);
+	});
 	mdClip.getAndRenderClip();
 });
