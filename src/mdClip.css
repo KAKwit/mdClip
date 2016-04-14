@@ -5,6 +5,7 @@ body {
 }
 
 h1 {
+	cursor: default;
 	position: fixed;
 	margin: 0;
 	padding: 9px 10px 4px 10px;
@@ -90,7 +91,6 @@ footer {
 input {
 	padding: 3px 5px;
 	font-size: 12px;
-	min-width: 50px;
 }
 
 input[type=button]:hover {
