@@ -26,14 +26,13 @@ h1 {
 #content, #options {
 	position: fixed;
 	top: 42px;
-	width: 270px;
-	height: 240px;
+	width: 266px;
+	height: 235px;
 	background-color: white;
-	border-radius: 5px;
-	overflow-y: scroll;
+	overflow-y: auto;
 	padding: 10px;
 	outline: none;
-	border: 1px solid #D9D5CE;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 	opacity: 0;
 	transition: all 0.3s ease-in-out;
 }
@@ -49,26 +48,28 @@ h1 {
 
 #content.in {
 	opacity: 1;
-	left: 8px;
+	left: 11px;
 }
 
 #options {
+	cursor: default;
 	left: -320px;
 }
 
 #options.in {
 	opacity: 1;
-	left: 8px;
+	left: 11px;
 }
 
 input[type=button] {
 	cursor: pointer;
-	width: 80px;
+	padding: 3px 10px;
+	min-width: 70px;
 	color: #333;
 	height: 28px;
 	border-radius: 5px;
-	border: 1px solid #D9D5CE;
-	background-color: #F6F1E8;
+	border: 1px solid transparent;
+	background-color: transparent;
 	outline: none;
 	transition: all 0.2s ease-in-out;
 }
@@ -76,7 +77,13 @@ input[type=button] {
 footer {
 	position: fixed;
 	width: 100%;
-	bottom: 36px;
+	bottom: 38px;
+}
+
+input {
+	padding: 3px 5px;
+	font-size: 12px;
+	min-width: 50px;
 }
 
 input[type=button]:hover {
@@ -86,14 +93,14 @@ input[type=button]:hover {
 
 #options-button {
 	position: absolute;
-	left: 3px;
+	left: 5px;
 }
 
 #copy-again {
 	opacity: 0;
 	cursor: default;
 	position: absolute;
-	right: 13px;
+	right: 15px;
 }
 
 #copy-again.in {
@@ -105,14 +112,19 @@ label {
 	font-weight: bold;
 }
 
+.op {
+	margin-bottom: 10px;
+}
+
 p {
 	font-size: 11px;
 	color: #666;
 	margin: 3px 0 8px 0;
 }
 
-input {
-	padding: 3px 5px;
-	font-size: 12px;
-	min-width: 50px;
+#heading-level-value {
+	position: relative;
+	top: -6px;
+	left: 3px;
+	cursor: default;
 }

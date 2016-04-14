@@ -10,9 +10,21 @@
 			<h1>mdClip</h1>
 			<div id="content" class="in" contenteditable="true"></div>
 			<div id="options">
-				<label for="headingLevel">Heading level</label>
-				<p>The number of # characters to insert before the title (1 to 3)</p>
-				<input id="headingLevel" type="number" min="1" max="3" />
+				<div class="op">
+					<label for="heading-level">Heading level</label>
+					<p>The number of '#' characters to insert before the title (1 to 6).</p>
+					<input id="heading-level" type="range" min="1" max="6" step="1" />
+					<span id="heading-level-value">3</span>
+				</div>
+				<div class="op">
+					<label for="headingLevel">Include icon</label>
+					<p>Whether or not to include the favicon.</p>
+					<input type="radio" id="include-icon-false" name="include-icon" value="false" />
+					<label for="include-icon-false">No</label>
+					&nbsp;&nbsp;
+					<input type="radio" id="include-icon-true" name="include-icon" value="true" />
+					<label for="include-icon-true">Yes</label>
+				</div>
 			</div>
 			<footer>
 				<input type="button" id="options-button" value="Settings" />
