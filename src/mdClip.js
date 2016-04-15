@@ -13,9 +13,10 @@ mdClip = function() {
 		includeIconTrue      : 'include-icon-true',
 		copyToClipboardTrue  : 'copy-to-clipboard-true',
 		copyToClipboardFalse : 'copy-to-clipboard-false',
-        themeSelect          : 'theme-select'
+        themeSelect          : 'theme-select',
+		storedClips          : 'stored-clips'
 	};
-	
+
 	/* Messages sent to the window */
 	var messageNames = {
 		getDescription : 'get-description',
@@ -50,10 +51,15 @@ mdClip = function() {
 		getTabDetails(function(details) {
 			getSettings(function(settings) {
 				document.getElementById(selectors.contentContainer).innerHTML = createClip(details, settings);
-				if (settings.copyToClipboard) {
-					copyToClipboard();
-				}
-				document.getElementById('main-window').className = settings.theme + ' in';
+				mdClipStore.pushClip(details, function() {
+					mdClipStore.getCount(function(count) {
+						document.getElementById(selectors.storedClips).textContent = count;
+						if (settings.copyToClipboard) {
+							copyToClipboard();
+						}
+						document.getElementById('main-window').className = settings.theme + ' in';
+					});
+				});
 			});
 		});
 	}
@@ -127,8 +133,13 @@ mdClip = function() {
 
 			document.getElementById(selectors.mainWindow).className = settings.theme;			
 			document.getElementById(selectors.optionsButton).className = settings.theme;			
-			document.getElementById(selectors.copyAgainButton).className = settings.theme + ' in';			
-			callback(settings);
+			document.getElementById(selectors.copyAgainButton).className = settings.theme + ' in';
+			
+			var count = 0;
+			mdClipStore.getCount(function(count) {
+				document.getElementById(selectors.storedClips).textContent = count;
+				callback(settings);
+			});
 		});	
 	}
 	
@@ -182,17 +193,27 @@ mdClip = function() {
 		}
 	}
 
+	function clearClips() {
+		mdClipStore.clearClips(function() {
+			mdClipStore.getCount(function(count) {
+				document.getElementById(selectors.storedClips).textContent = count;
+			});
+		});
+	}
+	
 	return {
 		getAndRenderClip: getAndRenderClip,
 		copyToClipboard: copyToClipboard,
 		showHideOptions: showHideOptions,
-		updateLevelValue: updateLevelValue
+		updateLevelValue: updateLevelValue,
+		clearClips: clearClips
 	};
 }();
 
 document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('options-button').addEventListener('click', mdClip.showHideOptions);
 	document.getElementById('heading-level').addEventListener('input', mdClip.updateLevelValue);
+	document.getElementById('clear-store').addEventListener('click', mdClip.clearClips);
 	document.getElementById('copy-again').addEventListener('click', function() {
 		document.getElementById('content').className = 'in copied';
 		mdClip.copyToClipboard();

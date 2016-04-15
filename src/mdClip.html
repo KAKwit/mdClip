@@ -4,6 +4,7 @@
 		<title>mdClip</title>
 		<link href="mdClip.css" rel="stylesheet" media="all" />
 		<script src="mdClip.js"></script>
+		<script src="mdClipStore.js"></script>
 	</head>
 	<body>
 		<div id="main-window">
@@ -45,6 +46,12 @@
 						<option value="orange">Orange</option>
 						<option value="purple">Purple</option>
 					</select>
+				</div>
+				<div class="op">
+					<label for="clear-store">Clear store</label>
+					<p>Clear the local storage of all clips.</p>
+					<input type="button" id="clear-store" value="Clear" style="background-color: #333;" />
+					&nbsp;<span>Stored clips: </span><span id="stored-clips"></span>
 				</div>
 			</div>
 			<footer>
