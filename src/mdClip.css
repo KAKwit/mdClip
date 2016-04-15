@@ -10,17 +10,16 @@ h1 {
 	margin: 0;
 	padding: 9px 10px 4px 10px;
 	font-size: 16px;
-	font-weight: bold;
-	color: #333;
+	font-weight: normal;
+	color: #fff;
 }
 
 #main-window {
 	position: relative;
 	width: 298px;
-	height: 333px;
+	height: 348px;
 	border-radius: 3px;
-	background-color: #E6E1D8;
-	border: 1px solid #D9D5CE;
+	background-color: #48A987;
 	overflow: hidden;
 	opacity: 0;
 	transition: opacity 0.1s ease-in-out;
@@ -34,7 +33,7 @@ h1 {
 	position: fixed;
 	top: 42px;
 	width: 266px;
-	height: 235px;
+	height: 250px;
 	background-color: white;
 	overflow-y: auto;
 	padding: 10px;
@@ -52,7 +51,7 @@ h1 {
 
 #content.in {
 	opacity: 1;
-	left: 11px;
+	left: 10px;
 }
 
 #content.copied {
@@ -66,17 +65,16 @@ h1 {
 
 #options.in {
 	opacity: 1;
-	left: 11px;
+	left: 10px;
 }
 
 input[type=button] {
 	cursor: pointer;
 	padding: 3px 10px;
 	min-width: 70px;
-	color: #333;
+	color: #fff;
 	height: 28px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	border: none;
 	background-color: transparent;
 	outline: none;
 	transition: all 0.2s ease-in-out;
@@ -94,8 +92,7 @@ input {
 }
 
 input[type=button]:hover {
-	border: 1px solid #D9D5CE;
-	background-color: white;
+	background-color: rgba(255, 255, 255, 0.2);
 }
 
 #options-button {
@@ -107,7 +104,7 @@ input[type=button]:hover {
 	opacity: 0;
 	cursor: default;
 	position: absolute;
-	right: 15px;
+	right: 14px;
 }
 
 #copy-again.in {
@@ -134,4 +131,28 @@ p {
 	top: -6px;
 	left: 3px;
 	cursor: default;
+}
+
+#main-window.default {
+	background-color: #444;
+}
+
+#main-window.green {
+	background-color: #48A987;
+}
+
+#main-window.blue {
+	background-color: #445EA7;
+}
+
+#main-window.red {
+	background-color: #C3484C;
+}
+
+#main-window.orange {
+	background-color: #E3842C;
+}
+
+#main-window.purple {
+	background-color: #A53F7B;
 }

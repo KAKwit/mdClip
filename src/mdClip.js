@@ -2,6 +2,7 @@ mdClip = function() {
 
 	/* Document object selector names */
 	var selectors = {
+		mainWindow           : 'main-window',
 		contentContainer     : 'content',
 		optionsContainer     : 'options',
 		copyAgainButton      : 'copy-again',
@@ -11,7 +12,8 @@ mdClip = function() {
 		includeIconFalse     : 'include-icon-false',
 		includeIconTrue      : 'include-icon-true',
 		copyToClipboardTrue  : 'copy-to-clipboard-true',
-		copyToClipboardFalse : 'copy-to-clipboard-false'
+		copyToClipboardFalse : 'copy-to-clipboard-false',
+        themeSelect          : 'theme-select'
 	};
 	
 	/* Messages sent to the window */
@@ -51,7 +53,7 @@ mdClip = function() {
 				if (settings.copyToClipboard) {
 					copyToClipboard();
 				}
-				document.getElementById('main-window').className = 'in';
+				document.getElementById('main-window').className = settings.theme + ' in';
 			});
 		});
 	}
@@ -112,13 +114,20 @@ mdClip = function() {
 					settings[key] = storage[key];
 				}
 			}
+
 			document.getElementById(selectors.headingLevel).value = settings.headingLevel;
 			document.getElementById(selectors.headingLevelValue).textContent = settings.headingLevel;
 			settings.includeIcon ? document.getElementById(selectors.includeIconTrue).setAttribute('checked', true) : document.getElementById(selectors.includeIconTrue).removeAttribute('checked');
 			settings.includeIcon ? document.getElementById(selectors.includeIconFalse).removeAttribute('checked') : document.getElementById(selectors.includeIconFalse).setAttribute('checked', true);
 			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardTrue).setAttribute('checked', true) : document.getElementById(selectors.copyToClipboardTrue).removeAttribute('checked');
 			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardFalse).removeAttribute('checked') : document.getElementById(selectors.copyToClipboardFalse).setAttribute('checked', true);
-			settings.copyToClipboard ? document.getElementById(selectors.copyAgainButton).value = 'Copy again' : document.getElementById(selectors.copyAgainButton).value = 'Copy'
+			settings.copyToClipboard ? document.getElementById(selectors.copyAgainButton).value = 'Copy again' : document.getElementById(selectors.copyAgainButton).value = 'Copy';
+			var e = document.getElementById(selectors.themeSelect);
+			selectOption(e, settings.theme);
+
+			document.getElementById(selectors.mainWindow).className = settings.theme;			
+			document.getElementById(selectors.optionsButton).className = settings.theme;			
+			document.getElementById(selectors.copyAgainButton).className = settings.theme + ' in';			
 			callback(settings);
 		});	
 	}
@@ -138,7 +147,7 @@ mdClip = function() {
 		showOptions = (content.className === 'in');
 		showOptions ? content.className = '' : content.className = 'in';
 		showOptions ? copyButton.className = '' : copyButton.className = 'in';
-		showOptions ? options.className = 'in' : options.className = '';
+		showOptions ? options.className = settings.theme + ' in' : options.className = settings.theme;
 		showOptions ? optionsButton.value = 'Okay' : optionsButton.value = 'Settings';
 		
 		if (!showOptions) {
@@ -151,6 +160,8 @@ mdClip = function() {
 		settings.headingLevel = parseInt(document.getElementById(selectors.headingLevel).value);
 		settings.includeIcon = (document.querySelector('input[name=include-icon]:checked').value === 'true');
 		settings.copyToClipboard = (document.querySelector('input[name=copy-to-clipboard]:checked').value === 'true');
+		var e = document.getElementById(selectors.themeSelect);
+		settings.theme = e.options[e.selectedIndex].value;
 		putSettings(function() {
 			getAndRenderClip();
 		});
@@ -161,7 +172,16 @@ mdClip = function() {
 		var level = document.getElementById(selectors.headingLevel).value;
 		document.getElementById(selectors.headingLevelValue).textContent = level;
 	}
-	
+
+	/* Select an option the hard way */ 
+	function selectOption(e, v) {
+		for (var i = 0; i < e.length; i++) {
+			if (e.options[i].value === v) {
+				e.selectedIndex = i;
+			}
+		}
+	}
+
 	return {
 		getAndRenderClip: getAndRenderClip,
 		copyToClipboard: copyToClipboard,
