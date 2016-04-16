@@ -19,14 +19,16 @@ mdClip = function() {
 		copyToClipboardFalse : 'copy-to-clipboard-false',
 		copyToStorageTrue    : 'copy-to-storage-true',
 		copyToStorageFalse   : 'copy-to-storage-false',
+        exportSelect         : 'export-select',
         themeSelect          : 'theme-select',
 		storedClips          : 'stored-clips'
 	};
 
 	/* Messages sent to the window */
 	var messageNames = {
-		getDescription : 'get-description',
-		getSelection   : 'get-selection'
+		getDescription   : 'get-description',
+		getSelection     : 'get-selection',
+		downloadMarkdown : 'download-markdown'
 	}
 	
 	/* Parameters for querying current tab */
@@ -50,12 +52,13 @@ mdClip = function() {
 		includeIcon: true,
 		copyToClipboard: true,
 		copyToStorage: true,
-		theme: 'default'
+		theme: 'default',
+		export: 'markdown'
 	};
 
 	const noStoredClips = '<p><i>No stored clips.</i></p>';
 	
-	/* Gather together the details, create the clip, and copy it to clipboard */
+	/* Gather together the details, create the clip, and copy it to clipboard & storage */
 	function getAndRenderClip() {
 		getTabDetails(function(details) {
 			getSettings(function(settings) {
@@ -66,7 +69,7 @@ mdClip = function() {
 				document.getElementById('main-window').className = settings.theme + ' in';
 				if (settings.copyToStorage) {
 					mdClipStore.pushClip(details, function() {
-						mdClipStore.getCount(function(count) {
+						mdClipStore.getClipsCount(function(count) {
 							document.getElementById(selectors.storedClips).textContent = count;
 						});
 					});
@@ -94,7 +97,7 @@ mdClip = function() {
 	
 	/* Build a markdown clip from current details as per settings */
 	function createClip(details, settings) {
-		var br = '<br/><br/>'
+		var br = '<br/><br/>';
 		var clip = Array(settings.headingLevel + 1).join("#") + ' ' + details.title + br;
 
 		if (details.iconUrl && settings.includeIcon) {
@@ -143,14 +146,16 @@ mdClip = function() {
 			settings.copyToStorage ? document.getElementById(selectors.copyToStorageFalse).removeAttribute('checked') : document.getElementById(selectors.copyToStorageFalse).setAttribute('checked', true);
 			settings.copyToStorage ? document.getElementById(selectors.storageButton).className = 'in' : document.getElementById(selectors.storageButton).className = '';
 			
-			var e = document.getElementById(selectors.themeSelect);
+			var e = document.getElementById(selectors.exportSelect);
+			selectOption(e, settings.export);
+			e = document.getElementById(selectors.themeSelect);
 			selectOption(e, settings.theme);
 
 			document.getElementById(selectors.mainWindow).className = settings.theme;			
 			document.getElementById(selectors.copyAgainButton).className = 'in';
 			
 			var count = 0;
-			mdClipStore.getCount(function(count) {
+			mdClipStore.getClipsCount(function(count) {
 				document.getElementById(selectors.storedClips).textContent = count;
 				callback(settings);
 			});
@@ -225,7 +230,9 @@ mdClip = function() {
 		settings.includeIcon = (document.querySelector('input[name=include-icon]:checked').value === 'true');
 		settings.copyToClipboard = (document.querySelector('input[name=copy-to-clipboard]:checked').value === 'true');
 		settings.copyToStorage = (document.querySelector('input[name=copy-to-storage]:checked').value === 'true');
-		var e = document.getElementById(selectors.themeSelect);
+		var e = document.getElementById(selectors.exportSelect);
+		settings.export = e.options[e.selectedIndex].value;
+		e = document.getElementById(selectors.themeSelect);
 		settings.theme = e.options[e.selectedIndex].value;
 		putSettings(function() {
 			getAndRenderClip();
@@ -235,7 +242,7 @@ mdClip = function() {
 	/* Clear clips from the store */
 	function clearClips() {
 		mdClipStore.clearClips(function() {
-			mdClipStore.getCount(function(count) {
+			mdClipStore.getClipsCount(function(count) {
 				document.getElementById(selectors.storageList).innerHTML = noStoredClips;
 				document.getElementById(selectors.storedClips).textContent = count;
 			});
@@ -265,13 +272,30 @@ mdClip = function() {
 			.replace(/>/g, '&gt;');
 	}
 	
+	function exportClips() {
+		if (settings.export === 'markdown') {
+			exportToMarkdown();
+		}
+	}
+	
+	function exportToMarkdown() {
+		mdClipStore.getClipsAsMarkdown(settings, function(content) {
+			chrome.tabs.query(queryInfo, function(tabs) {
+				var tab = tabs[0];
+				chrome.tabs.sendMessage(tab.id, {message: messageNames.downloadMarkdown, content: content}, function(response) {
+				});
+			});
+		});
+	}
+	
 	return {
 		getAndRenderClip: getAndRenderClip,
 		copyToClipboard: copyToClipboard,
 		showHideOptions: showHideOptions,
 		showHideStorage: showHideStorage,
 		updateLevelValue: updateLevelValue,
-		clearClips: clearClips
+		clearClips: clearClips,
+		exportClips: exportClips
 	};
 }();
 
@@ -280,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('storage-button').addEventListener('click', mdClip.showHideStorage);
 	document.getElementById('heading-level').addEventListener('input', mdClip.updateLevelValue);
 	document.getElementById('clear-store').addEventListener('click', mdClip.clearClips);
+	document.getElementById('export-button').addEventListener('click', mdClip.exportClips);
 	document.getElementById('copy-again').addEventListener('click', function() {
 		document.getElementById('content').className = 'in copied';
 		mdClip.copyToClipboard();

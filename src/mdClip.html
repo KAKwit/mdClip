@@ -5,6 +5,7 @@
 		<link href="mdClip.css" rel="stylesheet" media="all" />
 		<script src="mdClip.js"></script>
 		<script src="mdClipStore.js"></script>
+		<script src="jszip.min.js"></script>
 	</head>
 	<body>
 		<div id="main-window">
@@ -53,6 +54,14 @@
 					&nbsp;&nbsp;
 					<input type="radio" id="copy-to-storage-true" name="copy-to-storage" value="true" />
 					<label for="copy-to-storage-true">Yes</label>
+				</div>
+				<div class="op">
+					<label for="export-select">Export format</label>
+					<p>Export as a single markdown file or a zip file containing a Quiver note.</p>
+					<select id="export-select">
+						<option value="markdown">Markdown</option>
+						<option value="qvnote">qvnote</option>
+					</select>
 				</div>
 				<div class="op">
 					<label for="theme-select">Theme</label>

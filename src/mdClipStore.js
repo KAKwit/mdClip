@@ -35,14 +35,14 @@ mdClipStore = function() {
 	
 	function removeClip(clip, callback) {
 		getClips(function() {
-			var existingIndex = -1;
+			var index = -1;
 			for (var i = 0; i < clips.length; i++) {
-				if (clips[index].url === clip.url) {
-					existingIndex = i;
+				if (clips[i].url === clip.url) {
+					index = i;
 				}
 			}
 			if (index !== -1) {
-				clips.splice(existingIndex, 1);
+				clips.splice(index, 1);
 			}
 			putClips(function() {
 				callback();
@@ -63,18 +63,67 @@ mdClipStore = function() {
 		});
 	}
 
-	function getCount(callback) {
+	function getClipsCount(callback) {
 		getClips(function () {
 			callback(clipsCount);
 		});
 	}
 	
+	function getClipsAsMarkdown(settings, callback) {
+		getClips(function () {
+			var md = '';
+			for (var i = 0; i < clips.length; i++) {
+				if (i > 0) {
+					md += '\n---\n\n';
+				}
+				md += createClip(clips[i], settings);
+			}
+			callback(md);
+		});
+	}
+
+	function getClipsAsQvnote(callback) {
+		getClips(function () {
+			var md = '';
+			for (var i = 0; i < clips.length; i++) {
+				md += clips[i].title + '\r\n';
+			}
+			var zip = new JSZip();
+			zip.file('test.md', md);
+			zip.generateAsync({type: "base64"})
+				.then(function(content) {
+					callback(content);
+				});
+		});
+	}
+
+	function createClip(details, settings) {
+		var br = '\n\n';
+		var clip = Array(settings.headingLevel + 1).join("#") + ' ' + details.title + br;
+
+		if (details.iconUrl && settings.includeIcon) {
+			clip += '![icon](' + details.iconUrl + ')' + br;
+		}
+
+		if (details.description && details.description !== '') {
+			clip += details.description + br;
+		}
+
+		if (details.selection && details.selection !== '') {
+			clip += '> ' + details.selection + br;
+		}
+
+		clip += details.url + '\n';
+		return clip;
+	}
+
 	return {
 		getClips: getClips,
 		pushClip: pushClip,
 		removeClip: removeClip,
 		clearClips: clearClips,
-		getCount: getCount
+		getClipsCount: getClipsCount,
+		getClipsAsMarkdown: getClipsAsMarkdown
 	}
 
 }();
