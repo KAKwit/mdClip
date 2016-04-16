@@ -4,15 +4,21 @@ mdClip = function() {
 	var selectors = {
 		mainWindow           : 'main-window',
 		contentContainer     : 'content',
+		storageContainer     : 'storage',
+		storageList          : 'storage-list',
 		optionsContainer     : 'options',
-		copyAgainButton      : 'copy-again',
 		optionsButton        : 'options-button',
+		exportButton         : 'export-button',
+		storageButton        : 'storage-button',
+		copyAgainButton      : 'copy-again',
 		headingLevel         : 'heading-level',
 		headingLevelValue    : 'heading-level-value',
 		includeIconFalse     : 'include-icon-false',
 		includeIconTrue      : 'include-icon-true',
 		copyToClipboardTrue  : 'copy-to-clipboard-true',
 		copyToClipboardFalse : 'copy-to-clipboard-false',
+		copyToStorageTrue    : 'copy-to-storage-true',
+		copyToStorageFalse   : 'copy-to-storage-false',
         themeSelect          : 'theme-select',
 		storedClips          : 'stored-clips'
 	};
@@ -43,23 +49,28 @@ mdClip = function() {
 		headingLevel: 3,
 		includeIcon: true,
 		copyToClipboard: true,
+		copyToStorage: true,
 		theme: 'default'
 	};
 
+	const noStoredClips = '<p><i>No stored clips.</i></p>';
+	
 	/* Gather together the details, create the clip, and copy it to clipboard */
 	function getAndRenderClip() {
 		getTabDetails(function(details) {
 			getSettings(function(settings) {
 				document.getElementById(selectors.contentContainer).innerHTML = createClip(details, settings);
-				mdClipStore.pushClip(details, function() {
-					mdClipStore.getCount(function(count) {
-						document.getElementById(selectors.storedClips).textContent = count;
-						if (settings.copyToClipboard) {
-							copyToClipboard();
-						}
-						document.getElementById('main-window').className = settings.theme + ' in';
+				if (settings.copyToClipboard) {
+					copyToClipboard();
+				}
+				document.getElementById('main-window').className = settings.theme + ' in';
+				if (settings.copyToStorage) {
+					mdClipStore.pushClip(details, function() {
+						mdClipStore.getCount(function(count) {
+							document.getElementById(selectors.storedClips).textContent = count;
+						});
 					});
-				});
+				}
 			});
 		});
 	}
@@ -69,10 +80,10 @@ mdClip = function() {
 		chrome.tabs.query(queryInfo, function(tabs) {
 			var tab = tabs[0];
 			details.url = tab.url;
-			details.title = tab.title;
+			details.title = htmlEscape(tab.title);
 			details.iconUrl = tab.favIconUrl;
 			chrome.tabs.sendMessage(tab.id, {message: messageNames.getDescription}, function(response) {
-				details.description = response;
+				details.description = htmlEscape(response);
 				chrome.tabs.sendMessage(tab.id, {message: messageNames.getSelection}, function(response) {
 					details.selection = response;
 					callback(details);
@@ -128,12 +139,15 @@ mdClip = function() {
 			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardTrue).setAttribute('checked', true) : document.getElementById(selectors.copyToClipboardTrue).removeAttribute('checked');
 			settings.copyToClipboard ? document.getElementById(selectors.copyToClipboardFalse).removeAttribute('checked') : document.getElementById(selectors.copyToClipboardFalse).setAttribute('checked', true);
 			settings.copyToClipboard ? document.getElementById(selectors.copyAgainButton).value = 'Copy again' : document.getElementById(selectors.copyAgainButton).value = 'Copy';
+			settings.copyToStorage ? document.getElementById(selectors.copyToStorageTrue).setAttribute('checked', true) : document.getElementById(selectors.copyToStorageTrue).removeAttribute('checked');
+			settings.copyToStorage ? document.getElementById(selectors.copyToStorageFalse).removeAttribute('checked') : document.getElementById(selectors.copyToStorageFalse).setAttribute('checked', true);
+			settings.copyToStorage ? document.getElementById(selectors.storageButton).className = 'in' : document.getElementById(selectors.storageButton).className = '';
+			
 			var e = document.getElementById(selectors.themeSelect);
 			selectOption(e, settings.theme);
 
 			document.getElementById(selectors.mainWindow).className = settings.theme;			
-			document.getElementById(selectors.optionsButton).className = settings.theme;			
-			document.getElementById(selectors.copyAgainButton).className = settings.theme + ' in';
+			document.getElementById(selectors.copyAgainButton).className = 'in';
 			
 			var count = 0;
 			mdClipStore.getCount(function(count) {
@@ -153,16 +167,55 @@ mdClip = function() {
 	/* Show or hide the options window */
 	function showHideOptions() {
 		var content = document.getElementById(selectors.contentContainer);
+		var options = document.getElementById(selectors.optionsContainer);
 		var optionsButton = document.getElementById(selectors.optionsButton);
 		var copyButton = document.getElementById(selectors.copyAgainButton);
-		showOptions = (content.className === 'in');
+		var storageButton = document.getElementById(selectors.storageButton);
+		var showOptions = (content.className === 'in');
 		showOptions ? content.className = '' : content.className = 'in';
 		showOptions ? copyButton.className = '' : copyButton.className = 'in';
-		showOptions ? options.className = settings.theme + ' in' : options.className = settings.theme;
+		showOptions ? storageButton.className = '' : storageButton.className = 'in';
+		showOptions ? options.className = 'in' : options.className = '';
 		showOptions ? optionsButton.value = 'Okay' : optionsButton.value = 'Settings';
 		
 		if (!showOptions) {
 			updateSettingsFromScreen();
+		}
+	}
+	
+	/* Show or hide storage */
+	function showHideStorage() {
+		var content = document.getElementById(selectors.contentContainer);
+		var storage = document.getElementById(selectors.storageContainer);
+		var storageList = document.getElementById(selectors.storageList);
+		var optionsButton = document.getElementById(selectors.optionsButton);
+		var storageButton = document.getElementById(selectors.storageButton);
+		var exportButton = document.getElementById(selectors.exportButton);
+		var copyButton = document.getElementById(selectors.copyAgainButton);
+		var showStorage = (content.className === 'in');
+		showStorage ? content.className = '' : content.className = 'in';
+		showStorage ? storage.className = 'in' : storage.className = '';
+		showStorage ? copyButton.className = '' : copyButton.className = 'in';
+		showStorage ? optionsButton.className = '' : optionsButton.className = 'in';
+		showStorage ? exportButton.className = 'in' : exportButton.className = '';
+		showStorage ? storageButton.value = 'Close' : storageButton.value = 'Storage';
+		
+		if (showStorage) {
+			storageList.innerHTML = '';
+			mdClipStore.getClips(function(clips) {
+				if (clips.length === 0) {
+					storageList.innerHTML = noStoredClips;
+				}
+				else {
+					for (var i = 0; i < clips.length; i++) {
+						storageList.innerHTML = storageList.innerHTML + '<p><strong>' + clips[i].title + '</strong><br/>' + clips[i].url + '</p>';
+					}
+				}
+			});
+		}
+		
+		if (!showStorage) {
+			getAndRenderClip();
 		}
 	}
 
@@ -171,20 +224,30 @@ mdClip = function() {
 		settings.headingLevel = parseInt(document.getElementById(selectors.headingLevel).value);
 		settings.includeIcon = (document.querySelector('input[name=include-icon]:checked').value === 'true');
 		settings.copyToClipboard = (document.querySelector('input[name=copy-to-clipboard]:checked').value === 'true');
+		settings.copyToStorage = (document.querySelector('input[name=copy-to-storage]:checked').value === 'true');
 		var e = document.getElementById(selectors.themeSelect);
 		settings.theme = e.options[e.selectedIndex].value;
 		putSettings(function() {
 			getAndRenderClip();
 		});
 	}
-	
+
+	/* Clear clips from the store */
+	function clearClips() {
+		mdClipStore.clearClips(function() {
+			mdClipStore.getCount(function(count) {
+				document.getElementById(selectors.storageList).innerHTML = noStoredClips;
+				document.getElementById(selectors.storedClips).textContent = count;
+			});
+		});
+	}
+
 	/* Update the level value next to the range slider */
 	function updateLevelValue() {
 		var level = document.getElementById(selectors.headingLevel).value;
 		document.getElementById(selectors.headingLevelValue).textContent = level;
 	}
 
-	/* Select an option the hard way */ 
 	function selectOption(e, v) {
 		for (var i = 0; i < e.length; i++) {
 			if (e.options[i].value === v) {
@@ -193,18 +256,20 @@ mdClip = function() {
 		}
 	}
 
-	function clearClips() {
-		mdClipStore.clearClips(function() {
-			mdClipStore.getCount(function(count) {
-				document.getElementById(selectors.storedClips).textContent = count;
-			});
-		});
+	function htmlEscape(str) {
+		return String(str)
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;');
 	}
 	
 	return {
 		getAndRenderClip: getAndRenderClip,
 		copyToClipboard: copyToClipboard,
 		showHideOptions: showHideOptions,
+		showHideStorage: showHideStorage,
 		updateLevelValue: updateLevelValue,
 		clearClips: clearClips
 	};
@@ -212,6 +277,7 @@ mdClip = function() {
 
 document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('options-button').addEventListener('click', mdClip.showHideOptions);
+	document.getElementById('storage-button').addEventListener('click', mdClip.showHideStorage);
 	document.getElementById('heading-level').addEventListener('input', mdClip.updateLevelValue);
 	document.getElementById('clear-store').addEventListener('click', mdClip.clearClips);
 	document.getElementById('copy-again').addEventListener('click', function() {

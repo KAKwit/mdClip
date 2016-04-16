@@ -10,6 +10,16 @@
 		<div id="main-window">
 			<h1>mdClip</h1>
 			<div id="content" class="in" contenteditable="true"></div>
+			<div id="storage">
+				<div class="op">
+					<div id="storage-list"></div>
+					<hr/>
+					<label for="clear-store">Clear storage</label>
+					<p>Clear the local storage of all clips.</p>
+					<input type="button" id="clear-store" value="Clear" style="background-color: #333;" />
+					&nbsp;<span>Stored clips: </span><span id="stored-clips"></span>
+				</div>
+			</div>
 			<div id="options">
 				<div class="op" style="margin-bottom:10px;">
 					<label for="heading-level">Heading level</label>
@@ -36,6 +46,15 @@
 					<label for="copy-to-clipboard-true">Yes</label>
 				</div>
 				<div class="op">
+					<label for="copy-to-storage">Copy to storage</label>
+					<p>Whether or not to copy to storage so they can be downloaded as a batch at a later time.</p>
+					<input type="radio" id="copy-to-storage-false" name="copy-to-storage" value="false" />
+					<label for="copy-to-storage-false">No</label>
+					&nbsp;&nbsp;
+					<input type="radio" id="copy-to-storage-true" name="copy-to-storage" value="true" />
+					<label for="copy-to-storage-true">Yes</label>
+				</div>
+				<div class="op">
 					<label for="theme-select">Theme</label>
 					<p>Gotta be able to change colors I guess.</p>
 					<select id="theme-select">
@@ -48,14 +67,26 @@
 					</select>
 				</div>
 				<div class="op">
-					<label for="clear-store">Clear store</label>
-					<p>Clear the local storage of all clips.</p>
-					<input type="button" id="clear-store" value="Clear" style="background-color: #333;" />
-					&nbsp;<span>Stored clips: </span><span id="stored-clips"></span>
+					<hr/>
+					<h2>Help</h2>
+					<p>
+						mdClip uses the active tab's title, favicon, meta description, and current
+						selection to create a markdown snippet which is (optionally) copied 
+						to the clipboard so it can be pasted into another application.
+					</p>
+					<p>
+						Clips may also optionally be stored locally so they can be accumulated and
+						then downloaded at a later time. This can be useful if you want to remember
+						pages you come across but don't want to write them out to your notes application
+						each time. When you are ready, use the Storage button and then Export a zip file
+						containing a group of clips.
+					</p>
 				</div>
 			</div>
 			<footer>
-				<input type="button" id="options-button" value="Settings" />
+				<input type="button" id="options-button" class="in" value="Settings" />
+				<input type="button" id="export-button" value="Export" />
+				<input type="button" id="storage-button" value="Storage" />
 				<input type="button" id="copy-again" class="in" value="Copy" />
 			</footer>
 		</div>

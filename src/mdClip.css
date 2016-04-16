@@ -14,6 +14,12 @@ h1 {
 	color: #fff;
 }
 
+h2 {
+	margin: 0 0 10px 0;
+	font-size: 14px;
+	font-weight: normal;
+}
+
 #main-window {
 	position: relative;
 	width: 298px;
@@ -29,7 +35,7 @@ h1 {
 	opacity: 1;
 }
 
-#content, #options {
+#content, #options, #storage {
 	position: fixed;
 	top: 42px;
 	width: 266px;
@@ -68,6 +74,17 @@ h1 {
 	left: 10px;
 }
 
+#storage {
+	word-break: break-all;
+	top: -350px;
+	left: 10px;
+}
+
+#storage.in {
+	opacity: 1;
+	top: 42px;
+}
+
 input[type=button] {
 	cursor: pointer;
 	padding: 3px 10px;
@@ -96,20 +113,47 @@ input[type=button]:hover {
 }
 
 #options-button {
+	opacity: 0;
 	position: absolute;
 	left: 5px;
+	z-index: 0;
+}
+
+#options-button.in {
+	opacity: 1;
+	z-index: 10;
+}
+
+#export-button {
+	opacity: 0;
+	position: absolute;
+	left: 5px;
+	z-index: 0;
+}
+
+#export-button.in {
+	opacity: 1;
+	z-index: 10;
+}
+
+#storage-button {
+	opacity: 0;
+    position: absolute;
+	left: 75px;
+}
+
+#storage-button.in {
+	opacity: 1;
 }
 
 #copy-again {
 	opacity: 0;
-	cursor: default;
 	position: absolute;
 	right: 14px;
 }
 
 #copy-again.in {
 	opacity: 1;
-	cursor: pointer;
 }
 
 label {
@@ -126,11 +170,23 @@ p {
 	margin: 3px 0 8px 0;
 }
 
+#storage-list p strong {
+	color: #333;
+}
+
 #heading-level-value {
 	position: relative;
 	top: -6px;
 	left: 3px;
 	cursor: default;
+}
+
+hr {
+	margin: 25px 0 10px 0;
+	border: 0;
+	height: 0;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #main-window.default {
