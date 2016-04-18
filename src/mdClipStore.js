@@ -33,11 +33,11 @@ mdClipStore = function() {
 		});
 	}
 	
-	function removeClip(clip, callback) {
+	function removeClip(url, callback) {
 		getClips(function() {
 			var index = -1;
 			for (var i = 0; i < clips.length; i++) {
-				if (clips[i].url === clip.url) {
+				if (clips[i].url === url) {
 					index = i;
 				}
 			}
@@ -82,14 +82,30 @@ mdClipStore = function() {
 		});
 	}
 
-	function getClipsAsQvnote(callback) {
+	function getClipsAsQvnote(settings, callback) {
 		getClips(function () {
-			var md = '';
-			for (var i = 0; i < clips.length; i++) {
-				md += clips[i].title + '\r\n';
-			}
 			var zip = new JSZip();
-			zip.file('test.md', md);
+			var uuid = guid();
+			var date = Date.now();
+			var meta = {
+				"created_at": date,
+				"tags": ["mdClip"],
+				"title": "mdClip",
+				"updated_at": date,
+				"uuid": uuid
+			};
+			var folder = zip.folder(uuid + '.qvnote')
+			folder.file('meta.json', JSON.stringify(meta));
+			var note = {
+				"title": "mdClip",
+				cells: []
+				};
+			for (var i = 0; i < clips.length; i++) {
+				note.cells.push({
+					"type": "markdown",
+					"data": createClip(clips[i], settings)});
+			};
+			folder.file('content.json', JSON.stringify(note));
 			zip.generateAsync({type: "base64"})
 				.then(function(content) {
 					callback(content);
@@ -116,14 +132,25 @@ mdClipStore = function() {
 		clip += details.url + '\n';
 		return clip;
 	}
+	
+	function guid() {
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	}
 
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+		.toString(16)
+		.substring(1);
+	}
+	
 	return {
 		getClips: getClips,
 		pushClip: pushClip,
 		removeClip: removeClip,
 		clearClips: clearClips,
 		getClipsCount: getClipsCount,
-		getClipsAsMarkdown: getClipsAsMarkdown
+		getClipsAsMarkdown: getClipsAsMarkdown,
+		getClipsAsQvnote: getClipsAsQvnote
 	}
 
 }();

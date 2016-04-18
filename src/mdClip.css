@@ -20,6 +20,15 @@ h2 {
 	font-weight: normal;
 }
 
+a {
+	color: #0875b9;
+	text-decoration: none;
+}
+
+a:hover, a:focus {
+	text-decoration: underline;
+}
+
 #main-window {
 	position: relative;
 	width: 298px;

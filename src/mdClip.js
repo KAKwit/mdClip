@@ -28,7 +28,8 @@ mdClip = function() {
 	var messageNames = {
 		getDescription   : 'get-description',
 		getSelection     : 'get-selection',
-		downloadMarkdown : 'download-markdown'
+		downloadMarkdown : 'download-markdown',
+		downloadQvnote   : 'download-qvnote'
 	}
 	
 	/* Parameters for querying current tab */
@@ -213,7 +214,8 @@ mdClip = function() {
 				}
 				else {
 					for (var i = 0; i < clips.length; i++) {
-						storageList.innerHTML = storageList.innerHTML + '<p><strong>' + clips[i].title + '</strong><br/>' + clips[i].url + '</p>';
+						storageList.innerHTML = storageList.innerHTML + '<p><strong>' + clips[i].title + '</strong><br/>' + clips[i].url + '<br/>' +
+						'<a href="#" class="remove-stored-item" data-url="' + clips[i].url + '">remove</a></p>';
 					}
 				}
 			});
@@ -272,9 +274,26 @@ mdClip = function() {
 			.replace(/>/g, '&gt;');
 	}
 	
+	function removeStoredClip(e) {
+		e.preventDefault();
+		var url = e.srcElement.getAttribute('data-url');
+		mdClipStore.removeClip(url, function() {
+			e.srcElement.parentNode.remove();
+			mdClipStore.getClipsCount(function(count) {
+				if (count === 0) {
+					document.getElementById(selectors.storageList).innerHTML = noStoredClips;
+				}
+				document.getElementById(selectors.storedClips).textContent = count;
+			});
+		});
+	}
+	
 	function exportClips() {
 		if (settings.export === 'markdown') {
 			exportToMarkdown();
+		}
+		if (settings.export === 'qvnote') {
+			exportToQvnote();
 		}
 	}
 	
@@ -288,12 +307,23 @@ mdClip = function() {
 		});
 	}
 	
+	function exportToQvnote() {
+		mdClipStore.getClipsAsQvnote(settings, function(content) {
+			chrome.tabs.query(queryInfo, function(tabs) {
+				var tab = tabs[0];
+				chrome.tabs.sendMessage(tab.id, {message: messageNames.downloadQvnote, content: content}, function(response) {
+				});
+			});
+		})
+	}
+	
 	return {
 		getAndRenderClip: getAndRenderClip,
 		copyToClipboard: copyToClipboard,
 		showHideOptions: showHideOptions,
 		showHideStorage: showHideStorage,
 		updateLevelValue: updateLevelValue,
+		removeStoredClip: removeStoredClip,
 		clearClips: clearClips,
 		exportClips: exportClips
 	};
@@ -305,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('heading-level').addEventListener('input', mdClip.updateLevelValue);
 	document.getElementById('clear-store').addEventListener('click', mdClip.clearClips);
 	document.getElementById('export-button').addEventListener('click', mdClip.exportClips);
+	document.getElementById('storage-list').addEventListener('click', mdClip.removeStoredClip);
 	document.getElementById('copy-again').addEventListener('click', function() {
 		document.getElementById('content').className = 'in copied';
 		mdClip.copyToClipboard();
